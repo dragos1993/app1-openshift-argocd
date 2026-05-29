@@ -1,0 +1,75 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: app1-postgres
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/dragos1993/app1-openshift-argocd.git
+    targetRevision: main
+    path: k8s/helm
+    helm:
+      releaseName: postgres
+      valueFiles:
+        - values/postgres/values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: app1
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: app1-backend
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/dragos1993/app1-openshift-argocd.git
+    targetRevision: main
+    path: k8s/helm
+    helm:
+      releaseName: backend
+      valueFiles:
+        - values/backend/values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: app1
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: app1-frontend
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/dragos1993/app1-openshift-argocd.git
+    targetRevision: main
+    path: k8s/helm
+    helm:
+      releaseName: frontend
+      valueFiles:
+        - values/frontend/values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: app1
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
