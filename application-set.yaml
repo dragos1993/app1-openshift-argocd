@@ -5,14 +5,20 @@ metadata:
   namespace: argocd
 spec:
   generators:
-    - git:
-        repoURL: https://github.com/dragos1993/app1-openshift-argocd.git
-        revision: main
-        directories:
-          - path: k8s/helm
+    - list:
+        elements:
+          - name: app1-postgres
+            appName: postgres
+            path: apps/app-postgres/posgres
+          - name: app1-backend
+            appName: backend
+            path: apps/app-backend/bakend
+          - name: app1-frontend
+            appName: frontend
+            path: apps/app-frontend/frontend
   template:
     metadata:
-      name: app1-helm
+      name: "{{ element.name }}"
     spec:
       project: default
       source:
@@ -20,8 +26,9 @@ spec:
         targetRevision: main
         path: k8s/helm
         helm:
+          releaseName: "{{ element.appName }}"
           valueFiles:
-            - values.yaml
+            - "{{ element.path }}/values.yaml"
       destination:
         server: https://kubernetes.default.svc
         namespace: app1
